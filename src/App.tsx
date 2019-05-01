@@ -1,26 +1,43 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from 'react';
+import axios from 'axios';
+import { url } from './constants';
+interface Details {
+  Doping: string;
+  Name: string;
+  Nationality: string;
+  Place: number;
+  Seconds: number;
+  Time: string;
+  URL: string;
+  Year: number;
+}
+interface AppProps {}
+interface AppState {
+  data: Details[];
+  error: null | string;
+}
+class App extends Component<AppProps, AppState> {
+  constructor(props: AppProps) {
+    super(props);
 
-const App: React.FC = () => {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    this.state = {
+      data: [],
+      error: null
+    };
+  }
+
+  componentDidMount = async () => {
+    try {
+      const { data } = await axios.get(url);
+      this.setState({ data });
+    } catch (error) {
+      this.setState({ error });
+    }
+  };
+
+  render() {
+    return <div>asd asd</div>;
+  }
 }
 
 export default App;
