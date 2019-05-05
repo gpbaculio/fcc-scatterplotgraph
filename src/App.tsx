@@ -50,8 +50,14 @@ class App extends Component<AppProps, AppState> {
   };
   createChart = () => {
     const { data } = this.state;
-    const width = 900,
-      height = 600;
+    const margin = {
+        top: 100,
+        right: 20,
+        bottom: 30,
+        left: 60
+      },
+      width = 920 - margin.left - margin.right,
+      height = 630 - margin.top - margin.bottom;
 
     // x-axis
     const x = d3
@@ -67,8 +73,11 @@ class App extends Component<AppProps, AppState> {
     var svg = d3
       .select('.graph-container')
       .append('svg')
-      .attr('width', width)
-      .attr('height', height);
+      .attr('width', width + margin.left + margin.right)
+      .attr('height', height + margin.top + margin.bottom)
+      .attr('class', 'graph')
+      .append('g')
+      .attr('transform', 'translate(60,60)');
 
     svg
       .append('g')
