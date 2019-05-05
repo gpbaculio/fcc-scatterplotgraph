@@ -9,7 +9,7 @@ interface Details {
   Nationality: string;
   Place: number;
   Seconds: number;
-  Time: Date | string;
+  Time: Date;
   URL: string;
   Year: number;
 }
@@ -32,7 +32,7 @@ class App extends Component<AppProps, AppState> {
     try {
       const data = await axios.get(url).then(({ data }) =>
         data.map((d: Details) => {
-          const [minutes, seconds] = (d.Time as string).split(':');
+          const [minutes, seconds] = String(d.Time).split(':');
           const Time = new Date(
             Date.UTC(1970, 0, 1, 0, Number(minutes), Number(seconds))
           );
@@ -74,7 +74,7 @@ class App extends Component<AppProps, AppState> {
       .append('g')
       .attr('class', 'x axis')
       .attr('id', 'x-axis')
-      .attr('transform', 'translate(60,400)')
+      .attr('transform', 'translate(0,500)')
       .call(xAxis)
       .append('text')
       .attr('class', 'x-axis-label')
@@ -82,6 +82,25 @@ class App extends Component<AppProps, AppState> {
       .attr('y', -6)
       .style('text-anchor', 'end')
       .text('Year');
+
+    // y-axis
+    const y = d3
+      .scaleTime()
+      .domain([
+        d3.min(data, ({ Time }) => Time) as Date,
+        d3.max(data, ({ Time }) => Time) as Date
+      ])
+      .range([0, height]);
+
+    const yAxis = d3
+      .axisLeft(y)
+      .tickFormat(d => d3.timeFormat('%M:%S')(new Date(`${d}`)));
+
+    svg
+      .append('g')
+      .attr('class', 'y axis')
+      .attr('id', 'y-axis')
+      .call(yAxis);
   };
   render() {
     return <div className='graph-container' />;
