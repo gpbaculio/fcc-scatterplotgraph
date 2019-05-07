@@ -110,6 +110,20 @@ class App extends Component<AppProps, AppState> {
       .attr('class', 'y axis')
       .attr('id', 'y-axis')
       .call(yAxis);
+
+    // dots
+    const color = d3.scaleOrdinal(d3.schemeCategory10);
+    svg
+      .selectAll('.dot')
+      .data(data)
+      .enter()
+      .append('circle')
+      .attr('class', 'dot')
+      .attr('r', 6)
+      .attr('cx', d => x(d.Year))
+      .attr('cy', d => y(d.Time))
+      .attr('data-xvalue', d => d.Year)
+      .attr('data-yvalue', d => d.Time.toISOString());
   };
   render() {
     return <div className='graph-container' />;
