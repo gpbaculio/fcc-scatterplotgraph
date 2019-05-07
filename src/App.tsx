@@ -123,7 +123,8 @@ class App extends Component<AppProps, AppState> {
       .attr('cx', d => x(d.Year))
       .attr('cy', d => y(d.Time))
       .attr('data-xvalue', d => d.Year)
-      .attr('data-yvalue', d => d.Time.toISOString());
+      .attr('data-yvalue', d => d.Time.toISOString())
+      .style('fill', d => color(`${d.Doping !== ''}`));
   };
   render() {
     return <div className='graph-container' />;
