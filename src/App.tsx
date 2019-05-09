@@ -78,6 +78,13 @@ class App extends Component<AppProps, AppState> {
       .attr('class', 'graph')
       .append('g')
       .attr('transform', 'translate(60,60)');
+    // Define the div for the tooltip
+    var div = d3
+      .select('body')
+      .append('div')
+      .attr('class', 'tooltip')
+      .attr('id', 'tooltip')
+      .style('opacity', 0);
 
     svg
       .append('g')
@@ -124,7 +131,22 @@ class App extends Component<AppProps, AppState> {
       .attr('cy', d => y(d.Time))
       .attr('data-xvalue', d => d.Year)
       .attr('data-yvalue', d => d.Time.toISOString())
-      .style('fill', d => color(`${d.Doping !== ''}`));
+      .style('fill', d => color(`${d.Doping !== ''}`))
+      .on('mouseover', ({ Name, Nationality, Year, Time, Doping }) => {
+        div.style('opacity', 0.9);
+        div.attr('data-year', Year);
+        div
+          .html(
+            `<div class='d-flex flex-column'>
+              <div>${Name}: ${Nationality}</div>
+              <div>Year: ${Year}, Time: ${d3.timeFormat('%M:%S')(Time)}</div>
+              ${Doping && `<div class='mt-1'>${Doping}</div>`}
+            </div>`
+          )
+          .style('left', d3.event.pageX + 'px')
+          .style('top', d3.event.pageY - 28 + 'px');
+      })
+      .on('mouseout', () => div.style('opacity', 0));
   };
   render() {
     return <div className='graph-container' />;
