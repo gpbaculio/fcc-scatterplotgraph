@@ -1,14 +1,12 @@
 .graph-container {
-  width: 100vw;
-  height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
+
 div.tooltip {
   position: absolute;
-
   padding: 10px;
   font: 12px sans-serif;
   background: lightsteelblue;

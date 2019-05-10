@@ -71,13 +71,31 @@ class App extends Component<AppProps, AppState> {
     const xAxis = d3.axisBottom(x).tickFormat(d3.format('d'));
 
     var svg = d3
-      .select('.graph-container')
+      .select('.chart')
       .append('svg')
       .attr('width', width + margin.left + margin.right)
       .attr('height', height + margin.top + margin.bottom)
       .attr('class', 'graph')
       .append('g')
       .attr('transform', 'translate(60,60)');
+    //title
+    svg
+      .append('text')
+      .attr('id', 'title')
+      .attr('x', width / 2)
+      .attr('y', 0 - margin.top / 2)
+      .attr('text-anchor', 'middle')
+      .style('font-size', '30px')
+      .text('Doping in Professional Bicycle Racing');
+
+    //subtitle
+    svg
+      .append('text')
+      .attr('x', width / 2)
+      .attr('y', 0 - margin.top / 2 + 25)
+      .attr('text-anchor', 'middle')
+      .style('font-size', '20px')
+      .text("35 Fastest times up Alpe d'Huez");
     // Define the div for the tooltip
     var div = d3
       .select('body')
@@ -149,7 +167,12 @@ class App extends Component<AppProps, AppState> {
       .on('mouseout', () => div.style('opacity', 0));
   };
   render() {
-    return <div className='graph-container' />;
+    return (
+      <div className='graph-container flex-column'>
+        <div>asd</div>
+        <div className='chart' />
+      </div>
+    );
   }
 }
 
