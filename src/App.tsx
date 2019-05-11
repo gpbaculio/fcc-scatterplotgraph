@@ -32,10 +32,12 @@ class App extends Component<AppProps, AppState> {
     try {
       const data = await axios.get(url).then(({ data }) =>
         data.map((d: Details) => {
-          const [minutes, seconds] = String(d.Time).split(':');
-          const Time = new Date(
-            Date.UTC(1970, 0, 1, 0, Number(minutes), Number(seconds))
-          );
+          const [mm, ss] = String(d.Time)
+            .split(':')
+            .map(n => Number(n));
+          let Time = new Date();
+          Time.setMinutes(mm);
+          Time.setSeconds(ss);
           return {
             ...d,
             Place: +d.Place,
@@ -50,14 +52,9 @@ class App extends Component<AppProps, AppState> {
   };
   createChart = () => {
     const { data } = this.state;
-    const margin = {
-        top: 100,
-        right: 20,
-        bottom: 30,
-        left: 60
-      },
-      width = 920 - margin.left - margin.right,
-      height = 630 - margin.top - margin.bottom;
+    const width = 800,
+      height = 600,
+      padding = 100;
 
     // x-axis
     const x = d3
@@ -66,24 +63,21 @@ class App extends Component<AppProps, AppState> {
         d3.min(data, ({ Year }) => Year - 1) as number,
         d3.max(data, ({ Year }) => Year + 1) as number
       ])
-      .range([0, width]);
+      .range([padding, width - padding]);
 
     const xAxis = d3.axisBottom(x).tickFormat(d3.format('d'));
 
     var svg = d3
-      .select('.chart')
+      .select('.graph-container')
       .append('svg')
-      .attr('width', width + margin.left + margin.right)
-      .attr('height', height + margin.top + margin.bottom)
-      .attr('class', 'graph')
-      .append('g')
-      .attr('transform', 'translate(60,60)');
+      .attr('width', width)
+      .attr('height', height);
     //title
     svg
       .append('text')
       .attr('id', 'title')
       .attr('x', width / 2)
-      .attr('y', 0 - margin.top / 2)
+      .attr('y', padding / 2)
       .attr('text-anchor', 'middle')
       .style('font-size', '30px')
       .text('Doping in Professional Bicycle Racing');
@@ -92,7 +86,7 @@ class App extends Component<AppProps, AppState> {
     svg
       .append('text')
       .attr('x', width / 2)
-      .attr('y', 0 - margin.top / 2 + 25)
+      .attr('y', padding / 2 + 25)
       .attr('text-anchor', 'middle')
       .style('font-size', '20px')
       .text("35 Fastest times up Alpe d'Huez");
@@ -108,7 +102,7 @@ class App extends Component<AppProps, AppState> {
       .append('g')
       .attr('class', 'x axis')
       .attr('id', 'x-axis')
-      .attr('transform', 'translate(0,500)')
+      .attr('transform', `translate(0,${height - padding})`)
       .call(xAxis)
       .append('text')
       .attr('class', 'x-axis-label')
@@ -124,7 +118,7 @@ class App extends Component<AppProps, AppState> {
         d3.min(data, ({ Time }) => Time) as Date,
         d3.max(data, ({ Time }) => Time) as Date
       ])
-      .range([0, height]);
+      .range([padding, height - padding]);
 
     const yAxis = d3
       .axisLeft(y)
@@ -134,6 +128,7 @@ class App extends Component<AppProps, AppState> {
       .append('g')
       .attr('class', 'y axis')
       .attr('id', 'y-axis')
+      .attr('transform', `translate(${padding}, 0)`)
       .call(yAxis);
 
     // dots
@@ -148,7 +143,7 @@ class App extends Component<AppProps, AppState> {
       .attr('cx', d => x(d.Year))
       .attr('cy', d => y(d.Time))
       .attr('data-xvalue', d => d.Year)
-      .attr('data-yvalue', d => d.Time.toISOString())
+      .attr('data-yvalue', d => d.Time.toUTCString())
       .style('fill', d => color(`${d.Doping !== ''}`))
       .on('mouseover', ({ Name, Nationality, Year, Time, Doping }) => {
         div.style('opacity', 0.9);
@@ -165,14 +160,34 @@ class App extends Component<AppProps, AppState> {
           .style('top', d3.event.pageY - 28 + 'px');
       })
       .on('mouseout', () => div.style('opacity', 0));
+    var legend = svg
+      .selectAll('.legend')
+      .data(color.domain())
+      .enter()
+      .append('g')
+      .attr('class', 'legend')
+      .attr('id', 'legend')
+      .attr('transform', function(d, i) {
+        return `translate(-${padding}, ${padding / 2 + 80 - i * 20})`;
+      });
+
+    legend
+      .append('rect')
+      .attr('x', width - 18)
+      .attr('width', 18)
+      .attr('height', 18)
+      .style('fill', color);
+
+    legend
+      .append('text')
+      .attr('x', width - 24)
+      .attr('y', 9)
+      .attr('dy', '.35em')
+      .style('text-anchor', 'end')
+      .text(d => (d === 'true' ? 'Doping' : 'No doping'));
   };
   render() {
-    return (
-      <div className='graph-container flex-column'>
-        <div>asd</div>
-        <div className='chart' />
-      </div>
-    );
+    return <div className='graph-container flex-column' />;
   }
 }
 
