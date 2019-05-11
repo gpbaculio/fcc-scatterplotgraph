@@ -160,7 +160,8 @@ class App extends Component<AppProps, AppState> {
           .style('top', d3.event.pageY - 28 + 'px');
       })
       .on('mouseout', () => div.style('opacity', 0));
-    var legend = svg
+
+    let legend = svg
       .selectAll('.legend')
       .data(color.domain())
       .enter()
